@@ -1,0 +1,6 @@
+jupyter
+pandas
+minio
+pyarrow
+s3fs
+psycopg2-binary
