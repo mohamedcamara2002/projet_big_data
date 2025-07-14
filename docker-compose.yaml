@@ -1,7 +1,9 @@
+version: '3.9'
 
 services:
   postgres:
     image: postgres:14
+    container_name: db_inflation
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -13,6 +15,7 @@ services:
 
   minio:
     image: minio/minio
+    container_name: minio_server
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -24,7 +27,10 @@ services:
       - minio_data:/data
 
   app:
-    build: ./docker/app
+    build:
+      context: .                                 
+      dockerfile: docker/app/Dockerfile          
+    container_name: data_inserter
     depends_on:
       - postgres
       - minio
@@ -37,11 +43,12 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
     volumes:
-      - ./data:/data
+      - ./data:/data                            
     command: ["python", "insert_data.py"]
 
   jupyter:
     image: project-jupyter
+    container_name: jupyter_lab
     ports:
       - "8888:8888"
     volumes:
